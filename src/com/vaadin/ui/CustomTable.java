@@ -3522,7 +3522,7 @@ public class CustomTable extends AbstractSelect implements Action.Container,
                     if (getColumnIcon(colId) != null) {
                         target.addAttribute("icon", getColumnIcon(colId));
                     }
-                    if (sortables.contains(colId)) {
+                    if (sortables.contains(colId)  && !sortDisabledColumns.contains(colId)) {
                         target.addAttribute("sortable", true);
                     }
                 }
@@ -5936,5 +5936,20 @@ public class CustomTable extends AbstractSelect implements Action.Container,
             logger = Logger.getLogger(Table.class.getName());
         }
         return logger;
+    }
+    
+ private Set<String> sortDisabledColumns = new HashSet<String>();
+    
+    public void setSortDisabled(boolean sortDisabled,String columnId) {
+        if (sortDisabled) 
+            if(sortDisabledColumns.add(columnId))
+            	markAsDirty();
+        else if(!sortDisabled)
+        	 if(sortDisabledColumns.remove(columnId))
+        		 markAsDirty();
+    }
+    
+    public boolean getSortDisabled(Object columnId) {
+        return sortDisabledColumns.contains(columnId);
     }
 }

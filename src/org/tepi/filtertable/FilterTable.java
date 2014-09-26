@@ -81,7 +81,7 @@ public class FilterTable extends CustomTable implements IFilterTable {
             for (Object key : getColumnIdToFilterMap().keySet()) {
                 /* Do not paint filters which are not children */
                 if (columnIdToFilterMap.get(key) != null
-                        && columnIdToFilterMap.get(key).getParent() == null) {
+                		&& columnIdToFilterMap.get(key).getParent() == null || filterDisabledColumns.contains(key)) {
                     continue;
                 }
                 /* Paint the filter field */
@@ -384,6 +384,27 @@ public class FilterTable extends CustomTable implements IFilterTable {
                     "Can't run filters on demand when filtersRunOnDemand is set to false");
         }
         generator.runFiltersNow();
+    }
+    
+private Set<Object> filterDisabledColumns = new HashSet<Object>();
+    
+    public void setFilterFieldDisabled(Object columnId, boolean disabled) {
+        if (disabled) {
+            if(filterDisabledColumns.add(columnId))markAsDirty();
+        } else {
+        	if(filterDisabledColumns.remove(columnId))markAsDirty();
+        }
+    }
+    
+    public boolean getFilterFieldDisabled(Object columnId) {
+        return filterDisabledColumns.contains(columnId);
+    }
+    
+    protected static final String COLUMN_RESIZE_DISABLED_STYLE = "column-resize-disable";
+    
+    public void setColumnResizeDisabled(boolean b){
+    	if(b)this.addStyleName(COLUMN_RESIZE_DISABLED_STYLE);
+    	else this.removeStyleName(COLUMN_RESIZE_DISABLED_STYLE);
     }
 
 }
